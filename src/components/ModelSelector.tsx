@@ -29,6 +29,7 @@ export function ModelSelector({
         valueKey="id"
         disabled={disabled}
         size="small"
+        dropProps={{ style: { zIndex: 200 } }}
       />
     </Box>
   );

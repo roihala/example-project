@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextRequest, NextResponse } from "next/server";
+import { DEFAULT_MODEL, isValidModelId } from "@/lib/models";
 
 const systemPrompt = `אתה מפקד בקורס לכתיבת פרומפטים. התפקיד שלך הוא לנתח פרומפטים שמשתמשים כותבים ולתת להם משוב ישיר וחד.
 
@@ -25,11 +26,20 @@ const systemPrompt = `אתה מפקד בקורס לכתיבת פרומפטים. 
 
 export async function POST(request: NextRequest) {
   try {
-    const { prompt } = await request.json();
+    const { prompt, model: requestedModel } = await request.json();
 
     if (!prompt || typeof prompt !== "string") {
       return NextResponse.json(
         { error: "חסר פרומפט" },
+        { status: 400 }
+      );
+    }
+
+    // Validate model if provided
+    const modelId = requestedModel || DEFAULT_MODEL;
+    if (requestedModel && !isValidModelId(requestedModel)) {
+      return NextResponse.json(
+        { error: "מודל לא תקין" },
         { status: 400 }
       );
     }
@@ -43,7 +53,7 @@ export async function POST(request: NextRequest) {
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const model = genAI.getGenerativeModel({ model: modelId });
 
     const result = await model.generateContent([
       { text: systemPrompt },

@@ -5,10 +5,12 @@ import { Box, Main, Heading, Text, Spinner } from "grommet";
 import { Header } from "@/components/Header";
 import { ChatMessage, Message, FeedbackData } from "@/components/ChatMessage";
 import { ChatInput } from "@/components/ChatInput";
+import { DEFAULT_MODEL } from "@/lib/models";
 
 export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
+  const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -31,7 +33,7 @@ export default function Home() {
       const response = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ prompt, model: selectedModel }),
       });
 
       const data = await response.json();
@@ -122,7 +124,12 @@ export default function Home() {
         </Box>
       </Main>
 
-      <ChatInput onSubmit={handleSubmit} disabled={loading} />
+      <ChatInput
+        onSubmit={handleSubmit}
+        disabled={loading}
+        selectedModel={selectedModel}
+        onModelChange={setSelectedModel}
+      />
     </Box>
   );
 }

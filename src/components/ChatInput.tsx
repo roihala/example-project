@@ -1,15 +1,18 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { Box, TextArea, Button, Spinner } from "grommet";
 import { Send } from "grommet-icons";
+import { ModelSelector } from "./ModelSelector";
 
 interface ChatInputProps {
   onSubmit: (prompt: string) => void;
   disabled: boolean;
+  selectedModel: string;
+  onModelChange: (modelId: string) => void;
 }
 
-export function ChatInput({ onSubmit, disabled }: ChatInputProps) {
+export function ChatInput({ onSubmit, disabled, selectedModel, onModelChange }: ChatInputProps) {
   const [value, setValue] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -41,40 +44,48 @@ export function ChatInput({ onSubmit, disabled }: ChatInputProps) {
       }}
     >
       <Box
-        direction="row"
-        gap="small"
         width={{ max: "800px" }}
         style={{ margin: "0 auto", width: "100%" }}
+        gap="small"
       >
-        <Box flex>
-          <TextArea
-            ref={textareaRef}
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="הכנס את הפרומפט שלך כאן..."
+        <Box direction="row" justify="end">
+          <ModelSelector
+            selectedModel={selectedModel}
+            onModelChange={onModelChange}
             disabled={disabled}
-            rows={2}
-            resize={false}
-            style={{ direction: "rtl" }}
           />
         </Box>
-        <Box justify="end">
-          <Button
-            primary
-            icon={
-              disabled ? (
-                <Spinner size="xsmall" color="white" />
-              ) : (
-                <Send size="small" />
-              )
-            }
-            onClick={handleSubmit}
-            disabled={disabled || !value.trim()}
-            tip="שלח"
-            a11yTitle="שלח פרומפט"
-            style={{ height: "48px", width: "48px" }}
-          />
+        <Box direction="row" gap="small">
+          <Box flex>
+            <TextArea
+              ref={textareaRef}
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="הכנס את הפרומפט שלך כאן..."
+              disabled={disabled}
+              rows={2}
+              resize={false}
+              style={{ direction: "rtl" }}
+            />
+          </Box>
+          <Box justify="end">
+            <Button
+              primary
+              icon={
+                disabled ? (
+                  <Spinner size="xsmall" color="white" />
+                ) : (
+                  <Send size="small" />
+                )
+              }
+              onClick={handleSubmit}
+              disabled={disabled || !value.trim()}
+              tip="שלח"
+              a11yTitle="שלח פרומפט"
+              style={{ height: "48px", width: "48px" }}
+            />
+          </Box>
         </Box>
       </Box>
     </Box>
