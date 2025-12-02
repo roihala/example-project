@@ -1,12 +1,6 @@
 import type { Metadata } from "next";
-import { Heebo } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
-
-const heebo = Heebo({
-  variable: "--font-heebo",
-  subsets: ["hebrew", "latin"],
-});
 
 export const metadata: Metadata = {
   title: "מאמן פרומפטים",
@@ -20,7 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="he" dir="rtl" suppressHydrationWarning>
-      <body className={`${heebo.variable} font-sans antialiased`}>
+      <body>
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>

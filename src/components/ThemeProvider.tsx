@@ -1,47 +1,59 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
+import { Grommet } from "grommet";
+import { lightTheme } from "@/lib/theme";
 
-type Theme = "light" | "dark";
+type ThemeMode = "light" | "dark";
 
 interface ThemeContextType {
-  theme: Theme;
+  mode: ThemeMode;
   toggleTheme: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextType>({
-  theme: "light",
+  mode: "light",
   toggleTheme: () => {},
 });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("light");
+  const [mode, setMode] = useState<ThemeMode>("light");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    const saved = localStorage.getItem("theme") as Theme | null;
+    const saved = localStorage.getItem("theme") as ThemeMode | null;
     if (saved) {
-      setTheme(saved);
+      setMode(saved);
     } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      setTheme("dark");
+      setMode("dark");
     }
   }, []);
 
   useEffect(() => {
     if (mounted) {
-      document.documentElement.classList.toggle("dark", theme === "dark");
-      localStorage.setItem("theme", theme);
+      localStorage.setItem("theme", mode);
     }
-  }, [theme, mounted]);
+  }, [mode, mounted]);
 
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "light" ? "dark" : "light"));
-  };
+  const toggleTheme = useCallback(() => {
+    setMode((prev) => (prev === "light" ? "dark" : "light"));
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
-      {children}
+    <ThemeContext.Provider value={{ mode, toggleTheme }}>
+      <Grommet
+        theme={lightTheme}
+        themeMode={mode}
+        full
+        style={{ direction: "rtl" }}
+      >
+        {children}
+      </Grommet>
     </ThemeContext.Provider>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { Box, Main, Heading, Text, Spinner } from "grommet";
 import { Header } from "@/components/Header";
 import { ChatMessage, Message, FeedbackData } from "@/components/ChatMessage";
 import { ChatInput } from "@/components/ChatInput";
@@ -66,44 +67,62 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <Box fill background="background-back">
       <Header />
 
-      <main
+      <Main
         ref={chatContainerRef}
-        className="max-w-3xl mx-auto pt-20 pb-32 px-4 overflow-y-auto"
-        style={{ minHeight: "calc(100vh - 80px)" }}
+        pad={{ top: "80px", bottom: "140px", horizontal: "medium" }}
+        overflow="auto"
+        flex
       >
-        {messages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-[60vh] text-center">
-            <h2 className="text-2xl font-bold text-foreground mb-4">
-              ברוכים הבאים למאמן פרומפטים
-            </h2>
-            <p className="text-foreground/70 max-w-md">
-              כתוב פרומפט וקבל משוב מפורט על היתרונות, החסרונות, וגרסה משופרת שתוכל להעתיק.
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {messages.map((message) => (
-              <ChatMessage key={message.id} message={message} />
-            ))}
-            {loading && (
-              <div className="flex justify-start mb-4">
-                <div className="bg-ai-card rounded-2xl rounded-bl-sm px-5 py-4">
-                  <div className="flex gap-2">
-                    <div className="w-2 h-2 bg-foreground/50 rounded-full animate-bounce" style={{ animationDelay: "0ms" }}></div>
-                    <div className="w-2 h-2 bg-foreground/50 rounded-full animate-bounce" style={{ animationDelay: "150ms" }}></div>
-                    <div className="w-2 h-2 bg-foreground/50 rounded-full animate-bounce" style={{ animationDelay: "300ms" }}></div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-      </main>
+        <Box width={{ max: "800px" }} style={{ margin: "0 auto", width: "100%" }}>
+          {messages.length === 0 ? (
+            <Box
+              align="center"
+              justify="center"
+              pad="xlarge"
+              height={{ min: "60vh" }}
+              animation="fadeIn"
+            >
+              <Heading level={2} textAlign="center" margin={{ bottom: "small" }}>
+                ברוכים הבאים למאמן פרומפטים
+              </Heading>
+              <Text
+                size="large"
+                color="text-weak"
+                textAlign="center"
+                style={{ maxWidth: "500px" }}
+              >
+                כתוב פרומפט וקבל משוב מפורט על היתרונות, החסרונות, וגרסה משופרת שתוכל להעתיק.
+              </Text>
+            </Box>
+          ) : (
+            <Box gap="small" pad={{ vertical: "medium" }}>
+              {messages.map((message) => (
+                <ChatMessage key={message.id} message={message} />
+              ))}
+              {loading && (
+                <Box direction="row" justify="start" margin={{ bottom: "small" }}>
+                  <Box
+                    background="ai-card"
+                    round="medium"
+                    pad="medium"
+                    elevation="xsmall"
+                  >
+                    <Box direction="row" gap="small" align="center">
+                      <Spinner size="small" />
+                      <Text color="text-weak">מנתח את הפרומפט...</Text>
+                    </Box>
+                  </Box>
+                </Box>
+              )}
+            </Box>
+          )}
+        </Box>
+      </Main>
 
       <ChatInput onSubmit={handleSubmit} disabled={loading} />
-    </div>
+    </Box>
   );
 }
